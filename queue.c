@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 //type
 typedef struct process_t {
@@ -17,7 +18,16 @@ typedef struct queue_t {
 
 void enqueue(queue_t* queue, void* element);
 void* dequeue(queue_t* queue);
-process_t* dequeueProcess(queue_t* queue);
+process_t* dequeueProcess(queue_t* queue){
+    int max = INT_MIN;
+    while (queue){
+        if (queue->data > max){
+            max = queue->data;
+        }
+        queue = queue->next;
+    }
+    return max;
+};
 int qsize(queue_t* queue);
 int size = 0;
 
