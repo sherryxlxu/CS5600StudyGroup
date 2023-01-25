@@ -3,47 +3,37 @@
 #include <stdlib.h>
 
 //type
-typedef struct process_t
-{
+typedef struct process_t {
 	int identifier;
 	char *name;
 	int priority;	
 } process_t;
 
-typedef struct queue_t{
-	int data; /*payload  */
-	/*pointer  */
+typedef struct queue_t {
+	void* data;
 	int isHead;
 	struct queue_t *next;
-
 } queue_t;
 
-void enqueue(queue_t* queue, int element);
+void enqueue(queue_t* queue, void* element);
 void* dequeue(queue_t* queue);
 process_t* dequeueProcess(queue_t* queue);
 int qsize(queue_t* queue);
-int size;
+int size = 0;
 
-void enqueue(queue_t* queue, int element) {
-    
-	queue_t *cur = queue;
-
+void enqueue(queue_t* queue, void* element) {
+	queue_t* cur = queue;
     while (cur->next != NULL) {
     	cur = cur->next;
     }
-
-    queue_t * new_q = (queue_t *) malloc(sizeof(queue_t));
+    queue_t* new_q = (queue_t*) malloc(sizeof(queue_t));
     new_q->data = element;
     cur->next = new_q;
-
     // free(cur); 
     size++;
-
 }
 
-
 void* dequeue(queue_t* queue) {
-
 	if (queue->next == NULL) {
 		return NULL;
 	}
@@ -55,9 +45,8 @@ void* dequeue(queue_t* queue) {
 	return data;
 }
 
-
 queue_t* createQueue() {
-	queue_t *queue = malloc(sizeof(queue_t));
+	queue_t* queue = (queue_t*) malloc(sizeof(queue_t));
 	queue->isHead = 1;
 	return queue;
 }
@@ -71,19 +60,19 @@ void printQueue(queue_t* queue) {
 			printf("%d->", cur->data);
 			cur = cur->next;
 		}
-		printf("%d->", cur->data);
+		printf("%d", cur->data);
 	}
 	printf("\n");
 }
 
-int qsize(queue_t * queue){
+int qsize(queue_t* queue){
 	return size;
 }
 
 int main(int argc, char const *argv[])
 {
 	queue_t *queue = createQueue();
-	// printQueue(queue);
+	printQueue(queue);
 	printf("%d\n", qsize(queue));
 
 	enqueue(queue, 0);
