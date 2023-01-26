@@ -4,7 +4,7 @@
  * queue.h / Implement Process Queue
  *
  * Xiaoliang Xu / CS5600 / Northeastern University
- * Collaborator:
+ * Collaborator: Zhixuan Cao, Ye Yao
  * Spring 2023 / Jan 25, 2023
  *
  */
