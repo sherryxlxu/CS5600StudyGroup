@@ -4,7 +4,7 @@
  * queue.h / Implement Process Queue
  *
  * Xiaoliang Xu / CS5600 / Northeastern University
- * Collaborator: Zhixuan Cao, Ye Yao
+ * Collaborator: Zhixuan Cao, Ye Yao, Xiaoliang Xu
  * Spring 2023 / Jan 25, 2023
  *
  */
@@ -62,11 +62,13 @@ process_t* dequeueProcess(queue_t* queue){
 			pre->next = cur->next;		/*remove the pointer from current node to next node  */
 			data = cur->data;			
 			free(cur);					/*remove the memory  */
-			return data;				/*content that we have removed  */
+			break;
+			
 		}
 		cur = cur->next;
 		pre = pre->next;				/*walk through linked list  */
 	}
+	return data;				/*content that we have removed  */
 }
 
 void enqueue(queue_t* queue, void* element) {
@@ -110,11 +112,11 @@ void printQueue(queue_t* queue) {
 	} else {
 		while (cur->next != NULL) {
 			processNode = cur->data;
-			printf("identifier: %d\n, name: %s\n priority: %d\n",processNode->identifier, processNode->name,processNode->priority);
+			printf(" identifier: %d\n name: %s\n priority: %d\n",processNode->identifier, processNode->name,processNode->priority);
 			cur = cur->next;
 		}
 		processNode = cur->data;
-		printf("identifier: %d\n, name: %s\n priority:%d\n",processNode->identifier, processNode->name,processNode->priority);
+		printf(" identifier: %d\n name: %s\n priority:%d\n",processNode->identifier, processNode->name,processNode->priority);
 	}
 	printf("\n");
 }
