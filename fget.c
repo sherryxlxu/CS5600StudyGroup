@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     return -1;
   }
   printf("Connected with server successfully\n");
-  printf("argv[1]:%d\n",strcmp(argv[1], "INFO"));
+  printf("argv[1]:%d\n",strcmp(argv[1], "MD"));
   // Get input from the user GET:
   if (strcmp(argv[1], "GET") == 0) {
     if (argc != 4){
@@ -65,6 +65,13 @@ int main(int argc, char *argv[])
     exit(0);
     }
     sprintf(client_message, "INFO %s", argv[2]);
+    printf("Msg in client: %s\n", client_message);
+  } else if (strcmp(argv[1], "MD")==0) {
+    if (argc != 3){
+    printf("Usasge: %s fget MD <source_file>\n ", argv[0]);
+    exit(0);
+    }
+    sprintf(client_message, "MD %s", argv[2]);
     printf("Msg in client: %s\n", client_message);
   } else {
     printf("Error: Unknown command\n");
@@ -100,6 +107,8 @@ int main(int argc, char *argv[])
     fclose(file);
     printf("Server's response saved to %s\n", argv[3]);
   } else if (strcmp(argv[1], "INFO")==0) {
+    printf("server message:%s\n",server_message);
+  } else if (strcmp(argv[1], "MD")==0) {
     printf("server message:%s\n",server_message);
   } else {
     printf("Error: Unknown command\n");

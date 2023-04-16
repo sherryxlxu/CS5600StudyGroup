@@ -134,13 +134,49 @@ int main(void)
         return -1;
     }
 
-  } else {
+  } else if (strcmp(command, "MD") == 0) {
+      // Handle "MD" command
+      // make a new directory and send its status
+      if (mkdir(file_path, 0777) == 0) {
+         // The directory was created successfully
+        struct stat dir_info;
+        if (stat(file_path, &dir_info) < 0) {
+            printf("Can't get directory information\n");
+            return -1;
+        }
+
+        // Format the directory information as a string:
+        char md_message[8270];
+        sprintf(md_message, "Directory created: %s\n"
+                             "Owner: %d\n"
+                             "Group: %d\n"
+                             "Permissions: %o\n"
+                             "Last modified: %s",
+                file_path,
+                dir_info.st_uid,
+                dir_info.st_gid,
+                dir_info.st_mode & 0777,
+                ctime(&dir_info.st_mtime));
+        if (send(client_sock, md_message, strlen(md_message), 0) < 0){
+            printf("Can't send\n");
+            return -1;
+        }
+      } else {
+        // There was an error creating the directory
+        char md_message[8224];
+        sprintf(md_message, "Failed to create directory: %s", file_path);
+        if (send(client_sock, md_message, strlen(md_message), 0) < 0){
+            printf("Can't send\n");
+            return -1;
+        }
+      }
+    } else {
       printf("Invalid command\n");
       return -1;
   }
-  // Extract file path from the client message:
-  sscanf(client_message, "GET %[^\n]s", file_path);
-  printf("file_path: %s\n", file_path);
+  // // Extract file path from the client message:
+  // sscanf(client_message, "GET %[^\n]s", file_path);
+  // printf("file_path: %s\n", file_path);
 
   
 
