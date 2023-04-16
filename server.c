@@ -11,6 +11,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <time.h>
 
 int main(void)
 {
@@ -74,31 +76,73 @@ int main(void)
   }
   printf("Msg from client: %s\n", client_message);
   
+  // Extract command and file path from the client message:
+  char command[10];
+  sscanf(client_message, "%s %[^\n]s", command, file_path);
+
+  // Check the command type and act accordingly:
+  if (strcmp(command, "GET") == 0) {
+      // Handle "GET" command
+      // Open the file and read its contents:
+    fd = open(file_path, O_RDONLY);
+    if (fd < 0) {
+      printf("Can't open file\n");
+      return -1;
+    }
+
+    
+    nread = read(fd, file_contents, sizeof(file_contents));
+    if (nread < 0) {
+      printf("Can't read file\n");
+      close(fd);
+      return -1;
+    }
+
+    // Send file contents to the client:
+    if (send(client_sock, file_contents, strlen(file_contents), 0) < 0){
+      printf("Can't send\n");
+      close(fd);
+      return -1;
+    }
+  } else if (strcmp(command, "INFO") == 0) {
+      // Handle "INFO" command
+      // Get file information using stat():
+    struct stat file_info;
+    if (stat(file_path, &file_info) < 0) {
+        printf("Can't get file information\n");
+        return -1;
+    }
+
+    // Format the file information as a string:
+    char info_message[8270];
+    sprintf(info_message, "File path: %s\n"
+                           "Size: %ld bytes\n"
+                           "Owner: %d\n"
+                           "Group: %d\n"
+                           "Permissions: %o\n"
+                           "Last modified: %s",
+            file_path,
+            file_info.st_size,
+            file_info.st_uid,
+            file_info.st_gid,
+            file_info.st_mode & 0777,
+            ctime(&file_info.st_mtime));
+
+    // Send the file information to the client:
+    if (send(client_sock, info_message, strlen(info_message), 0) < 0){
+        printf("Can't send\n");
+        return -1;
+    }
+
+  } else {
+      printf("Invalid command\n");
+      return -1;
+  }
   // Extract file path from the client message:
   sscanf(client_message, "GET %[^\n]s", file_path);
   printf("file_path: %s\n", file_path);
 
-  // Open the file and read its contents:
-  fd = open(file_path, O_RDONLY);
-  if (fd < 0) {
-    printf("Can't open file\n");
-    return -1;
-  }
-
   
-  nread = read(fd, file_contents, sizeof(file_contents));
-  if (nread < 0) {
-    printf("Can't read file\n");
-    close(fd);
-    return -1;
-  }
-
-  // Send file contents to the client:
-  if (send(client_sock, file_contents, strlen(file_contents), 0) < 0){
-    printf("Can't send\n");
-    close(fd);
-    return -1;
-  }
 
   // Closing the socket:
   close(client_sock);
